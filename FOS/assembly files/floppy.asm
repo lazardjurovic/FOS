@@ -52,33 +52,33 @@ call newline
 mov si , error_found_message
 call print_string
 call newline
+ret 
 
 ;----------------- print_sector_data
 
 print_sector_data: ; function to print content of sector in ASCII
-mov si , sector_data ; string that we want to print
 mov cx , 512 ; number of times to print character (size of sector)
+mov si , sector_data ; address of first byte of sector data
+
 print_loop: ; loop to print character
 lodsb ; get character from SI
-cmp al , 33 ; if AL is character
-jl not_character ; if AL is not character than jump else continue
-call print_sector_character ; print character that we have loaded into AL
-loop print_loop ; print character 512 times
+dec cx ; decrement CX register
+cmp al , 0 ; if character is '0'
+je zero ; if AL is zero than jump else continue
+mov ah , 0Eh ; parameter for interrupt
+mov bl , 0x0F ; white text on black background
+int 10h ; BIOS interrupt
+cmp cx , 0 ; if we have reached 512th character
+jg print_loop ; print character 512 times
+
 ret ; return from function
 
-not_character:
+zero:
 mov al , '.' ; print "." character
-call print_sector_character
+mov ah , 0Eh ; parameter for interrupt
+int 10h ; BIOS interrupt
 dec cx ; decrement CX register
 jmp print_loop ; go to next character
-
-;------------ print_sector_character§
-
-print_sector_character: ;function to print only 1 character from sector
-mov ah , 0Eh ; parameter for interrupt
-mov bl , 47h ; red text on grey background
-int 10h ; BIOS interrupt
-ret ; return from function
 
 ;------------------Data-----------------
 
@@ -86,4 +86,3 @@ no_error_message db "No errors found.",0
 error_found_message db "Error found. To resolve problem try restarting floppy drive.",0
 sector_data times 512 db 0 ; initialized 512 bytes for one sector
 
-%INCLUDE "screen.s" ; Include functions for printing on screen (for error messages)

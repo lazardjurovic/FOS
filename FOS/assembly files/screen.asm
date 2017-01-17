@@ -9,9 +9,11 @@ ret
 
 print_string: ; function to print string from address in SI to '^' (end of string)
 lodsb ; loads byte at address DS:SI into AL
+mov ah , 0Eh ; else we print the char we have loaded
+mov bl , 0x0F ; white text on black background
 cmp al,0 ; 0 marks the end of string
 je end ; if we have reached end of string function will return
-call print_char ; else we print the char we have loaded
+int 10h ; BIOS interrupt
 jmp print_string ; we go to next char
 
 end:
@@ -27,12 +29,13 @@ ret
 
 newline:
 mov al , 10 ; new line feed
-call print_char
+int 10h ; BIOS interrupt
 mov al , 13 ; carriage return
-call print_char
+int 10h ; BIOS interrupt
 ret
 
 set_cursor_shape:
 mov ah , 01h ; parameter for function
 mov cx , 0007h ; full-block cursor
 int 10h ; BIOS interrupt
+ret
