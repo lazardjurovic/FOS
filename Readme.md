@@ -13,7 +13,15 @@
 
 
 ## Updates : 
-*17.1.2017* - first successfull test of floppy drive driver
+*17.1.2017.* - first successfull test of floppy drive driver  
+*20.1.2017.* - some commands are added to FOS , keyboard input also working  
+
+
+## How to build :  
+1) Navigate to FOS folder in your command prompt or terminal  
+2) type `nasm -f bin bootload.asm -o bootload.bin` ( you should have nasm already installed )  
+3) type `nasm -f bin kernel.asm -o KERNEL.BIN  `
+
 
 ## How to use :
 1) For using FOS you should have virtual or physical floppy drive  
