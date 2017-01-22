@@ -52,6 +52,11 @@ call print_char ; print character in AL
 jmp keyboard_input ; input next character
 
 backspace_pressed: ; if input is backspace
+mov si , input_buffer ; move address of input_buffer into SI
+cmp BYTE[si] , 0 ; check if input_buffer is empty
+je no_backspace ; if input_buffer is empty we don't do backspace
+mov ah , 02h ; parameter for interrupt ( get cursor position )
+
 dec di ; we decrement our input buffer so it doesn't contain last character
 mov al , 8 ; print backspace
 call print_char ; print character in AL
@@ -59,6 +64,9 @@ mov al , 32 ; override it with blank character ( space )
 call print_char ; print character in AL
 mov al , 8 ; print backspace
 call print_char ; print character in AL
+jmp keyboard_input ; input next character
+
+no_backspace:
 jmp keyboard_input ; input next character
 
 enter_pressed: ; if enter is pressed
@@ -85,6 +93,14 @@ jc help
 mov di , debug_root_command
 call compare_string
 jc debug_root
+
+mov di , list_command
+call compare_string
+jc list
+
+mov di , test_command
+call compare_string
+jc test_floppy
 
 ; THIS CODE EXECUTES WHEN NO COMMAND IS FOUND
 
@@ -121,6 +137,47 @@ call read_sector ; function to read specific sector of floppy disk
 call newline
 call newline
 call print_sector_data ; this function will print sector content on screen
+call newline
+jmp input_command ; input next command
+
+list: ; this command displays all files on floppy disk
+mov	ch, 0 ; track number
+mov	cl, 2 ; sector number
+mov	dh, 1 ; head number
+call read_sector ; function to read specific sector of floppy disk
+call newline
+call newline
+mov si , list_text
+call print_string
+call newline
+mov si , sector_data ; move address of sector data 
+
+print_directory:
+lodsb ; loab byte from SI into AL
+
+cmp al, 0 ; if byte in AL is zero we go to next command
+je finish
+
+mov cx , 11 ; put 11 in CX ( all file names are 11 characters long)
+mov ah , 0Eh ; parameter for interrupt ( print character on screen)
+int 10h ; BIOS interrupt
+print_file_name:
+mov al , [si] ; we move byte from SI into AL
+mov ah , 0Eh ; parameter for interrupt ( print character on screen)
+int 10h  ; BIOS interrupt
+inc si ; increment SI ( next time we will be printing next character of file name)
+loop print_file_name
+
+add si , 20 ; go to next file name
+call newline
+jmp print_directory
+
+finish:
+jmp input_command ; input next command
+
+test_floppy:
+call newline
+call get_disk_status ; calls function to checek for errors
 call newline
 jmp input_command ; input next command
 
