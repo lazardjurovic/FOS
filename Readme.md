@@ -10,11 +10,13 @@
 `string.asm` - contains all functions that have to do something with strings  
 `variables.asm` - contains all text and messages that will be printed on screen         
 `kernel.asm` - our main kernel file ( combines all other files into one file)  
+`load.asm`  - contains code for loading file into RAM (Work in progress)
 
 
 ## Updates : 
 *17.1.2017.* - first successfull test of floppy drive driver  
 *20.1.2017.* - some commands are added to FOS , keyboard input also working  
+*25.6.2017.* - added command for reseting specified drive 
 
 
 ## How to build :  
