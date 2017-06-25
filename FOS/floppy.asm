@@ -5,6 +5,7 @@ BITS 16
 reset_floppy: ; function to reset floppy drive
 pusha ; push all registers to stack
 xor ax, ax ; clear ax register
+mov dl , 0 ; drive 0 is floppy
 int 13h ; BIOS interrupt
 popa ; pop all registers from stack
 ret  ; retunrn from function
@@ -14,6 +15,7 @@ ret  ; retunrn from function
 get_disk_status: ; function that will detect if there are any errors
 pusha
 mov ah , 01h ; interrupt parameter
+mov dl , 0 
 int 13h
 cmp al , 0 ; if al = 0 there are no errors
 je .no_error
@@ -21,7 +23,6 @@ je .no_error
 mov si,error_found_message
 call newline
 call print_string
-call newline
 popa
 ret ; return from function
 
@@ -53,7 +54,6 @@ mov si , error_found_message
 call print_string
 call newline
 ret 
-
 ;----------------- print_sector_data
 
 print_sector_data: ; function to print content of sector in ASCII

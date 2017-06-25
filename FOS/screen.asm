@@ -12,11 +12,11 @@ lodsb ; loads byte at address DS:SI into AL
 mov ah , 0Eh ; else we print the char we have loaded
 mov bl , 0x0F ; white text on black background
 cmp al,0 ; 0 marks the end of string
-je end ; if we have reached end of string function will return
+je _end ; if we have reached end of string function will return
 int 10h ; BIOS interrupt
 jmp print_string ; we go to next char
 
-end:
+_end:
 ret ; returns to line line where it was called
 
 clear_screen: ; function to clear screen
@@ -28,6 +28,8 @@ int 10h ; BIOS interrupt
 ret
 
 newline:
+mov ah , 0Eh ; parameter for function
+mov bl,0x0F ; white text on black background
 mov al , 10 ; new line feed
 int 10h ; BIOS interrupt
 mov al , 13 ; carriage return
@@ -39,3 +41,5 @@ mov ah , 01h ; parameter for function
 mov cx , 0007h ; full-block cursor
 int 10h ; BIOS interrupt
 ret
+
+
