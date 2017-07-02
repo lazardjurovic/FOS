@@ -20,6 +20,7 @@ os_load_file:
 
 
 .floppy_ok:				; Ready to read first block of data
+
 	mov ax, 19			; Root dir starts at logical sector 19
 	call disk_convert_l2hts
 
@@ -27,8 +28,9 @@ os_load_file:
 	mov bx, si
 
 	mov ah, 2			; Params for int 13h: read floppy sectors
+	mov dl , 0
 	mov al, 14			; 14 root directory sectors
-
+	
 	pusha				; Prepare to enter loop
 
 
@@ -38,8 +40,9 @@ os_load_file:
 
 	stc				; A few BIOSes clear, but don't set properly
 	int 13h				; Read sectors
+	
 	jnc .search_root_dir		; No errors = continue
-
+	
 	call reset_floppy		; Problem = reset controller and try again
 	jnc .read_root_dir
 
@@ -50,36 +53,21 @@ os_load_file:
 	popa
 
 	mov cx, word 224		; Search all entries in root dir
-	mov bx, -32			; Begin searching at offset 0 in root dir
+	mov bx, -32	; Begin searching at offset 0 in root dir
 
-.next_root_entry:
-	add bx, 32			; Bump searched entries by 1 (offset + 32 bytes)
+.next_root_entry:	
+	add bx, 32	; Bump searched entries by 1 (offset + 32 bytes)
 	mov di, disk_buffer		; Point root dir at next entry
 	add di, bx
 
-	mov al, [di]			; First character of name
-
-	cmp al, 0			; Last file name already checked?
+	mov al , [di]
+	cmp al , 0
 	je .root_problem
-
-	cmp al, 229			; Was this file deleted?
-	je .next_root_entry		; If yes, skip it
-
-	mov al, [di+11]			; Get the attribute byte
-
-	cmp al, 0Fh			; Is this a special Windows entry?
-	je .next_root_entry
-
-	test al, 18h			; Is this a directory entry or volume label?
-	jnz .next_root_entry
-
-	mov byte [di+11], 0		; Add a terminator to directory name entry
-
-	mov ax, di			; Convert root buffer name to upper case
-	call os_string_uppercase
+	
+	mov byte [di+11], 0  ; add 0 terminator to the end of string
 
 	mov si, [.filename_loc]		; DS:SI = location of filename to load
-
+	
 	call compare_string		; Current entry same as requested?
 	jc .found_file_to_load
 
@@ -92,6 +80,7 @@ os_load_file:
 
 
 .found_file_to_load:			; Now fetch cluster and load FAT into RAM
+
 	mov ax, [di+28]			; Store file size to return to calling routine
 	mov word [.file_size], ax
 
@@ -364,4 +353,3 @@ os_error db "Fatal error",0
 Sides dw 2
 SecsPerTrack dw 18
 
-disk_buffer:
