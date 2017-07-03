@@ -6,12 +6,17 @@ next_char:
 mov ah , [si] ; load character from first string
 mov al , [di] ; load character from second string
 cmp al , 0 ; check if we have reached end of string
-je equal ; if we have reached the end then strings are equal
+je check_length ; if we have reached the end then strings are equal
 cmp al , ah ; compare characters
 jne not_equal ; if characters are not equal than strings are not equal
 inc si ; next time we look at next character
 inc di
 jmp next_char
+
+check_length:
+cmp ah , 0
+je equal
+jmp not_equal
 
 equal:
 popa
