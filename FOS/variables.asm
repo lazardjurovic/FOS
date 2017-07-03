@@ -18,4 +18,3 @@ info_message		 db "Floppy Operatign System v1.0" , 10 , 13 , "Made by Lazar Djur
 no_command_message 	 db 10 , 13 , "Command not found",0
 help_message		 db 10 , 13 , "clear - clears screen" , 10 , 13 , "help - shows help message " , 10 , 13 , "debug root - displays contents of root directory in ASCII " , 10 , 13 , "list - shows all files on floppy disk" , 10 , 13 , "test floppy - checks for errors on floppy drive" , 10 , 13 , "reset - resets specified drive " , 10 , 13 ,  0
 entry_message 		 db "For the list of commands type 'help' ", 10 , 13 , 0
-loading_file_message db "Loading file . . . ",0

@@ -198,15 +198,13 @@ reset: ; command for reseting drives
 	jmp input_command
 
 run_file:
-	call newline
-	mov si , loading_file_message
-	call print_string
 
-	mov cx , 32768
+	mov cx , 32768 ; parameters for function
 	mov ax , filename
 	call os_load_file
 
-	mov ax, 0			
+	; clear all registers
+	mov ax, 0			 
 	mov bx, 0
 	mov cx, 0
 	mov dx, 0
@@ -214,7 +212,8 @@ run_file:
 	mov di, 0
 
 	jc failed_to_load
-	call 32768
+	call 32768 ; call program that We have loaded
+	jmp input_command ; input next command
 
 failed_to_load:
 	call newline
