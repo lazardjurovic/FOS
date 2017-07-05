@@ -200,7 +200,15 @@ reset: ; command for reseting drives
 run_file:
 
 	mov cx , 32768 ; parameters for function
-	mov ax , filename
+	
+	call newline
+	mov si , execute_prompt
+	call print_string
+	
+	call get_string
+	
+	
+	mov ax , string
 	call os_load_file
 
 	; clear all registers
@@ -223,7 +231,7 @@ failed_to_load:
 
 input_buffer times 64 db 0 ; we define our input buffer to hold maximum 64 characters
 page_number db 0 ; page that is displayed
-filename db "TEST.BIN",0
+;filename db "TEST.BIN",0
 
 %INCLUDE "floppy.asm"
 %INCLUDE "keyboard.asm"
