@@ -29,7 +29,7 @@
 ## How to use :
 1) For using FOS you should have virtual or physical floppy drive  
 2) First you have to write bootloader to your floppy disk ( FOS is using MikeOS bootloader )  
-3) On Windows machines you open cmd, change directory to 'binary files' and type :  
+3) On Windows machines you open cmd, change directory to where you compiled your bootloader  and type :  
 			1) `debug bootload.bin`        
 			2) `w 100 0 0 1`  
 			3) `q`
